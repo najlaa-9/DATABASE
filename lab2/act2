@@ -1,0 +1,34 @@
+USE mypractical;
+CREATE TABLE customer(
+	custID INT(5),
+    custName VARCHAR(60),
+    custJob VARCHAR(30),
+    custAddr1 VARCHAR(60),
+    custAddr2 VARCHAR (60),
+    custState VARCHAR (30),
+    custPostCode VARCHAR (10),
+    custContact VARCHAR (15)
+    );
+CREATE TABLE sales(
+	slsID INT(5),
+    custID INT(5),
+    slsType VARCHAR(10),
+    slsOrdDate DATE,
+    slsShipDate DATE
+    );
+CREATE TABLE product(
+	prdID VARCHAR(15),
+    prdName VARCHAR (60),
+    prdCategory VARCHAR(30),
+    prdUnit VARCHAR(30),
+    prdCostPrice DECIMAL(9,2),
+    prdSalesPrice DECIMAL(9,2)
+    );
+
+USE mypractical;
+DESCRIBE customer;
+DESCRIBE sales;
+DESCRIBE product;
+
+SHOW TABLES;
+	
