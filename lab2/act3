@@ -1,0 +1,65 @@
+USE ABCVehicleServices;
+CREATE TABLE srvcustomer(
+	custCode VARCHAR(15) PRIMARY KEY,
+	custName VARCHAR(60),
+    custICNo VARCHAR(15),
+    custType VARCHAR(15),
+    custAddr VARCHAR(60),
+    custTown VARCHAR(30),
+    custPostCode INT(5),
+    custRegister DATE
+);
+USE ABCVehicleServices;
+CREATE TABLE srvvehicle(
+	vecNo VARCHAR(10) PRIMARY KEY,
+	vecOwner VARCHAR(15) NOT NULL,
+    vecChassisNo VARCHAR(30),
+    vecModel VARCHAR(60),
+    vehManufactured VARCHAR(60),
+    vecYearProduced INT(4),
+    vehLastProduced INT(4),
+    vehLastOdometer BIGINT(20),
+    FOREIGN KEY (vecOwner)
+		REFERENCES
+	srvcustomer(custCode)
+    );
+CREATE TABLE srvtechnician(
+tchNo INT(12) PRIMARY KEY,
+tchName VARCHAR(60),
+tchHireDate date
+);
+CREATE TABLE srvparts(
+partNo VARCHAR(45) PRIMARY KEY,
+partDescription VARCHAR(60),
+partCategory VARCHAR(45),
+partUnit VARCHAR(35),
+partCostPrice DECIMAL(9,2),
+partSalesPrice DECIMAL(9,2),
+partQtyOnHand INT(11)
+);
+
+CREATE TABLE srvservice(
+srvNo INT(12) PRIMARY KEY,
+custCode VARCHAR(15),
+vecNo VARCHAR(10),
+srvType VARCHAR(25),
+srvDate DATE,
+tchNo INT(5)
+);
+
+USE ABCVehicleServices;
+CREATE TABLE srvservicedetails(
+srvNo INT(12) NOT NULL,
+partNo VARCHAR(45) NOT NULL,
+orderQty INT(11),
+slsPrice DECIMAL(9,2),
+PRIMARY KEY (srvNo, partNo),
+FOREIGN KEY (srvNo) REFERENCES srvservice(srvNo),
+FOREIGN KEY (partNo) REFERENCES srvparts(partNo)
+);
+
+USE ABCVehicleServices;
+DESCRIBE srvcustomer;
+DESCRIBE srvvehicle;
+DESCRIBE srvservicedetails;
+DESCRIBE srvtechnician;
