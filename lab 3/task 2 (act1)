@@ -1,0 +1,42 @@
+USE xyz;
+INSERT INTO customer VALUES
+('C10001','Ali Ahmad','12 Jalan Mawar','Kuala Terengganu','Terengganu','21000','010-2339090'),
+('C10002','Siti','15 Jalan Melati','Klang','Selangor','40000','012-5448765'),
+('C10003','Leong Yi','30 Jalan Permata','Kuantan','Pahang','25000','014-6653214'),
+('C10004','Kumar','45 Jalan Meranti','Shah Alam','Selangor','41200','017-5643555'),
+('C10005','Abu','87 Jalan Pagoh','Seremban','Negeri Sembilan','67790','019-4378990');
+
+INSERT INTO product VALUES
+('AW-1001','TV LCD 4 INCH','Unit','100.00'),
+('AW-1002','Laptop Acer','Unit','2500.00'),
+('AW-1003','Printer HP','Unit','450.00'),
+('AW-1004','Samsung Monitor','Unit','1800.00'),
+('AW-1005','Keyboard Logitech','Unit',150.00);
+
+INSERT INTO invoice VALUES
+(10001, '2016-08-22', 'C10001', 1500.00, 'GDex', 'GD/1001'), 
+(10002, '2016-08-23', 'C10002', 2500.00, 'DHL', 'DH/1002'), 
+(10003, '2016-08-24', 'C10003', 450.00, 'GDex', 'GD/1003'), 
+(10004, '2016-08-25', 'C10004', 1800.00, 'PosLaju', 'PL/1004'), 
+(10005, '2016-08-28', 'C10005', 150.00, 'DHL', 'DH/1005'); 
+
+INSERT INTO invoice_line VALUES 
+(10001, 'AW-1001', 1, 1500.00, 1500.00), 
+(10002, 'AW-1002', 1, 2500.00, 2500.00), 
+(10003, 'AW-1003', 1, 450.00, 450.00), 
+(10004, 'AW-1004', 1, 1800.00, 1800.00), 
+(10005, 'AW-1005', 1, 150.00, 150.00);
+
+INSERT INTO customer
+(cust_number, cust_name, state)
+VALUES
+('C10006','Abdul Rauf Osman','Selangor');
+
+SELECT* FROM customer
+WHERE cust_number = 'C10006';
+
+USE xyz;
+SELECT* FROM customer;
+SELECT*FROM invoice;
+SELECT*FROM invoice_line;
+SELECT*FROM product;
