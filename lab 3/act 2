@@ -1,0 +1,49 @@
+USE xyz;
+SELECT cust_number, cust_name, state, contact_no
+FROM customer;
+
+SELECT*FROM customer
+WHERE state = 'Selangor';
+
+SELECT inv_number, cust_number, inv_date, inv_amount
+FROM invoice
+WHERE shipped_by = 'GDex';
+
+UPDATE product
+SET prod_desc ='TV LCD Plasma 4 inch'
+WHERE prod_code ='AW-1001';
+
+SELECT* FROM product
+WHERE prod_code = 'AW-1001';
+
+SELECT inv_number,inv_date,cust_number,inv_amount
+FROM invoice
+WHERE inv_date BETWEEN '2016-08-22'
+AND '2016-08-25';
+
+INSERT INTO product
+VALUES ('AC-5510','Panasonic air-cond 1.5 Horse Power ECO','Box',2300.00);
+
+INSERT INTO invoice
+VALUES ('10006','2016-08-28','C10001','2300.00','DHL','DHL/2145-004');
+
+INSERT INTO invoice_line
+VALUES('10006','AC-5510',1,2300.00,2300.00);
+
+SELECT*FROM product;
+SELECT*FROM invoice;
+SELECT*FROM invoice_line;
+
+UPDATE product
+SET prod_code = 'AC-5587'
+WHERE prod_code = 'AC-5510';
+
+SELECT*FROM product
+WHERE prod_code ='AC-5587';
+
+SELECT*FROM invoice_line
+WHERE inv_number=10006;
+
+SELECT inv_number,prod_code,sales_price,total_sales
+FROM invoice_line
+WHERE inv_number =10006;
