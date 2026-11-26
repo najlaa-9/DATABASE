@@ -1,0 +1,90 @@
+CREATE DATABASE IF NOT EXISTS abc_airlines;
+USE abc_airlines;
+
+-- 1. airport table
+CREATE TABLE airport (
+    airportcode VARCHAR(10) NOT NULL,
+    airportname VARCHAR(45) NOT NULL,
+    city VARCHAR(30),
+    country VARCHAR(30),
+    PRIMARY KEY (airportcode)
+);
+
+-- 2. airplane table
+CREATE TABLE airplane (
+    airplanecode VARCHAR(30) NOT NULL,
+    airlinename VARCHAR(50) NOT NULL,
+    manufactured VARCHAR(50),
+    seatcapacity INT,
+    airportcode VARCHAR(10) NOT NULL,
+    PRIMARY KEY (airplanecode),
+    CONSTRAINT fk_airplane_airport FOREIGN KEY (airportcode)
+        REFERENCES airport (airportcode)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+-- 3. flight table
+CREATE TABLE flight (
+    flightno VARCHAR(15) NOT NULL,
+    airportcode VARCHAR(10) NOT NULL,
+    departfrom VARCHAR(30),
+    arrivalto VARCHAR(30),
+    airplanecode VARCHAR(30) NOT NULL,
+    PRIMARY KEY (flightno),
+    CONSTRAINT fk_flight_airport FOREIGN KEY (airportcode)
+        REFERENCES airport (airportcode)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_flight_airplane FOREIGN KEY (airplanecode)
+        REFERENCES airplane (airplanecode)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+-- 4. profile table
+CREATE TABLE profile (
+    prfid VARCHAR(30) NOT NULL,
+    loginid VARCHAR(15) NOT NULL UNIQUE,
+    prfname VARCHAR(55) NOT NULL,
+    prfdob VARCHAR(55) NOT NULL,
+    prfaddr1 VARCHAR(55),
+    prfaddr2 VARCHAR(55),
+    prfstate VARCHAR(30),
+    prfpostcode INT,
+    prfHPNo VARCHAR(15) NOT NULL,
+    prfPassportNo VARCHAR(20),
+    prfemail VARCHAR(30) NOT NULL,
+    prfpwd VARCHAR(12) NOT NULL,
+    PRIMARY KEY (prfid)
+);
+
+-- 5. flightdetails table
+CREATE TABLE flightdetails (
+    flightno VARCHAR(15) NOT NULL,
+    departuredate DATE NOT NULL,
+    ticketprice DECIMAL(9, 2),
+    departtime TIME,
+    arrivaltime TIME,
+    duration INT,
+    seatavailability INT,
+    PRIMARY KEY (flightno, departuredate),
+    CONSTRAINT fk_flightdetails_flight FOREIGN KEY (flightno)
+        REFERENCES flight (flightno)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- 6. booking table
+CREATE TABLE booking (
+    bookingid VARCHAR(15) NOT NULL,
+    prfid VARCHAR(30) NOT NULL,
+    flightno VARCHAR(15) NOT NULL,
+    bookingdate DATE,
+    departuredate DATE NOT NULL,
+    bookingstatus VARCHAR(30),
+    PRIMARY KEY (bookingid),
+    CONSTRAINT fk_booking_profile FOREIGN KEY (prfid)
+        REFERENCES profile (prfid)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_booking_flight FOREIGN KEY (flightno)
+        REFERENCES flight (flightno)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT chk_bookingstatus CHECK (bookingstatus IN ('Booking', 'Confirmed'))
+);
