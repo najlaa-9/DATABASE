@@ -185,3 +185,83 @@ INSERT INTO booking (bookingid, prfid, flightno, bookingdate, departuredate, boo
 ('ZB52FD', '841207110923', 'MH1326', '2016-07-22', '2016-08-28', 'Confirmed'),
 ('RS40TG2', '850918103698', 'AK6322', '2015-06-03', '2016-08-22', 'Confirmed'),
 ('AG47Y8', '870910119034', 'MH1450', '2016-07-12', '2016-09-05', 'Booking');
+
+ACT2
+SELECT COUNT(*) AS TotalMalaysiaAirport
+FROM airport
+WHERE country = 'Malaysia';
+
+SELECT COUNT(*) AS TotalAirAsiaConfirmedDepartures
+FROM booking b
+JOIN flight f ON b.flightno = f.flightno
+JOIN airplane a ON f.airplanecode = a.airplanecode
+WHERE a.airlinename = 'AirAsia'
+  AND b.departuredate BETWEEN '2016-06-05' AND '2016-08-15'
+  AND b.bookingstatus = 'Confirmed';
+
+SELECT 
+    MAX(fd.ticketprice) AS MaxTicketPrice,
+    MIN(fd.ticketprice) AS MinTicketPrice
+FROM booking b
+JOIN flight f ON b.flightno = f.flightno
+JOIN airplane a ON f.airplanecode = a.airplanecode
+JOIN flightdetails fd 
+    ON b.flightno = fd.flightno 
+   AND b.departuredate = fd.departuredate
+WHERE a.airlinename = 'Malaysia Airlines'
+  AND b.bookingdate BETWEEN '2016-04-01' AND '2016-09-15';
+
+SELECT 
+    ap.airportcode,
+    ap.airportname,
+    COUNT(f.flightno) AS NumberOfFlights,
+    AVG(fd.duration) AS AverageFlightDuration
+FROM airport ap
+LEFT JOIN flight f ON ap.airportcode = f.airportcode
+LEFT JOIN flightdetails fd ON f.flightno = fd.flightno
+GROUP BY ap.airportcode, ap.airportname
+ORDER BY ap.airportname ASC;
+
+
+SELECT 
+    p.prfid,
+    p.prfname,
+    p.prfstate,
+    f.arrivalto AS FrequentDestination,
+    COUNT(b.bookingid) AS TotalBookings
+FROM profile p
+JOIN booking b ON p.prfid = b.prfid
+JOIN flight f ON b.flightno = f.flightno
+GROUP BY p.prfid, p.prfname, p.prfstate, f.arrivalto
+HAVING COUNT(b.bookingid) > 1;
+
+SELECT 
+    p.prfid,
+    p.prfname,
+    p.prfstate,
+    COUNT(b.bookingid) AS TotalBookings
+FROM profile p
+JOIN booking b ON p.prfid = b.prfid
+GROUP BY p.prfid, p.prfname, p.prfstate
+HAVING COUNT(b.bookingid) > 1;
+
+SELECT 
+    p.prfid,
+    p.prfname,
+    SUM(fd.ticketprice) AS TotalTicketPrice
+FROM profile p
+JOIN booking b ON p.prfid = b.prfid
+JOIN flightdetails fd 
+    ON b.flightno = fd.flightno 
+   AND b.departuredate = fd.departuredate
+GROUP BY p.prfid, p.prfname
+HAVING SUM(fd.ticketprice) > (
+    SELECT AVG(fd2.ticketprice)
+    FROM flightdetails fd2
+    JOIN flight f2 ON fd2.flightno = f2.flightno
+    JOIN airplane a2 ON f2.airplanecode = a2.airplanecode
+    WHERE a2.airlinename = 'AirAsia'
+);
+
+
+ACT3
