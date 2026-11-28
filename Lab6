@@ -264,4 +264,207 @@ HAVING SUM(fd.ticketprice) > (
 );
 
 
-ACT3
+LAB EXERCISE
+CREATE DATABASE IF NOT EXISTS abc_research_conference;
+USE abc_research_conference;
+
+-- 1. organiser table
+CREATE TABLE organiser (
+    organiser_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    address VARCHAR(150),
+    postcode VARCHAR(10),
+    state VARCHAR(50),
+    contact_person VARCHAR(100),
+    contact_number VARCHAR(20),
+    email_address VARCHAR(100),
+    PRIMARY KEY (organiser_id)
+);
+
+-- 2. venue table
+CREATE TABLE venue (
+    venue_id VARCHAR(20) NOT NULL,
+    venue_name VARCHAR(100) NOT NULL,
+    street VARCHAR(100),
+    city VARCHAR(50),
+    state VARCHAR(50),
+    postcode VARCHAR(10),
+    PRIMARY KEY (venue_id)
+);
+
+-- 3. conference table
+CREATE TABLE conference (
+    conference_id VARCHAR(20) NOT NULL,
+    name VARCHAR(120) NOT NULL,
+    conference_date DATE NOT NULL,
+    conference_year INT NOT NULL,
+    conference_theme VARCHAR(150),
+    organiser_id INT NOT NULL,
+    venue_id VARCHAR(20) NOT NULL,
+    PRIMARY KEY (conference_id),
+    CONSTRAINT fk_conf_organiser FOREIGN KEY (organiser_id)
+        REFERENCES organiser (organiser_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_conf_venue FOREIGN KEY (venue_id)
+        REFERENCES venue (venue_id)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+-- 4. parallel_session table
+CREATE TABLE parallel_session (
+    session_id VARCHAR(20) NOT NULL,
+    conference_id VARCHAR(20) NOT NULL,
+    session_title VARCHAR(120) NOT NULL,
+    session_time TIME,
+    room_name VARCHAR(60),
+    PRIMARY KEY (session_id),
+    CONSTRAINT fk_session_conference FOREIGN KEY (conference_id)
+        REFERENCES conference (conference_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- 5. participant table (running ID starting at 10001)
+CREATE TABLE participant (
+    participant_id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    designation ENUM('professional', 'educator', 'postgraduate student') NOT NULL,
+    company VARCHAR(100),
+    fees DECIMAL(8, 2) NOT NULL,
+    PRIMARY KEY (participant_id)
+) AUTO_INCREMENT = 10001;
+
+-- 6. conference_participant (tracks conference attendance and fees paid)
+CREATE TABLE conference_participant (
+    conference_id VARCHAR(20) NOT NULL,
+    participant_id INT NOT NULL,
+    fees_paid DECIMAL(8, 2) NOT NULL,
+    PRIMARY KEY (conference_id, participant_id),
+    CONSTRAINT fk_cp_conference FOREIGN KEY (conference_id)
+        REFERENCES conference (conference_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_cp_participant FOREIGN KEY (participant_id)
+        REFERENCES participant (participant_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+TASK 3
+-- Insert 3 organisers (note specifies 3 records for organiser)
+INSERT INTO organiser (organiser_id, name, address, postcode, state, contact_person, contact_number, email_address) VALUES
+(100, 'ABC Research Corporation', 'Menara ABC, Jalan Sultan Ismail', '50250', 'Kuala Lumpur', 'Dr. Lim Wei', '03-21445500', 'limwei@abcresearch.my'),
+(101, 'MyTech Research Institute', 'Persiaran Sains, Cyberjaya', '63000', 'Selangor', 'Puan Salmah Ahmad', '03-83112200', 'salmah@mytech.org.my'),
+(102, 'Borneo Innovation Council', 'Jalan Tun Abdul Razak', '93000', 'Sarawak', 'Encik Hazwanali', '082-449911', 'hazwan@borneoinno.my');
+
+-- Insert 5 venues (minimum 5 records)
+INSERT INTO venue (venue_id, venue_name, street, city, state, postcode) VALUES
+('V1', 'KL Convention Centre', 'Jalan Pinang', 'Kuala Lumpur', 'Wilayah Persekutuan', '50088'),
+('V2', 'Langkawi International Centre', 'Jalan Pantai Cenang', 'Langkawi', 'Kedah', '07000'),
+('V3', 'Penang Waterfront Hall', 'Lebuh Victoria', 'Penang', 'Pulau Pinang', '10300'),
+('V4', 'Terengganu Heritage Resort', 'Jalan Sultan Mahmud', 'Kuala Terengganu', 'Terengganu', '20400'),
+('V5', 'Johor Innovation Hub', 'Jalan Wong Ah Fook', 'Johor Bahru', 'Johor', '80000');
+
+-- Insert 6 conferences (minimum 5 records)
+INSERT INTO conference (conference_id, name, conference_date, conference_year, conference_theme, organiser_id, venue_id) VALUES
+('CONF2003A', 'National Computing Symposium', '2003-08-14', 2003, 'Distributed Systems', 100, 'V1'),
+('DSC2010',   'Data Science Conference',        '2010-09-20', 2010, 'Big Data & Analytics', 100, 'V1'),
+('CONF2015B', 'Asia Smart Grid Forum',        '2015-10-11', 2015, 'Sustainable Energy', 100, 'V3'),
+('IOTC2016',  'IoT & Cloud Conference',         '2016-07-18', 2016, 'Connected Devices', 101, 'V2'),
+('CONF2008C', 'Applied AI Summit',            '2008-11-05', 2008, 'Machine Intelligence', 102, 'V1'),
+('CONF2016D', 'Green Maritime Conference',      '2016-05-22', 2016, 'Ocean Sustainability', 101, 'V3');
+
+-- Insert 6 parallel sessions (minimum 5 records)
+INSERT INTO parallel_session (session_id, conference_id, session_title, session_time, room_name) VALUES
+('S1', 'CONF2003A', 'Parallel Track A: Grid Computing', '09:00:00', 'Room A1'),
+('S2', 'CONF2003A', 'Parallel Track B: Database Engines', '11:00:00', 'Room A2'),
+('S3', 'CONF2015B', 'Parallel Track A: Microgrids', '09:30:00', 'Hall B1'),
+('S4', 'DSC2010',   'Parallel Track A: Data Mining', '10:00:00', 'Room C1'),
+('S5', 'IOTC2016',  'Parallel Track A: Edge Computing', '14:00:00', 'Room D1'),
+('S6', 'CONF2008C', 'Parallel Track A: Neural Networks', '13:30:00', 'Hall E1');
+
+-- Insert 5 participants (IDs auto-generated starting from 10001)
+INSERT INTO participant (name, designation, company, fees) VALUES
+('Aiman Hakim',   'professional',         'Axiata Digital',       3000.00),
+('Farah Nadia',   'educator',             'UMT',                  2500.00),
+('Daniel Tan',    'postgraduate student', 'UTM',                  2000.00),
+('Nurul Syafiqah','professional',         'Petronas Tech',        3000.00),
+('Ramesh Nair',   'educator',             'USM',                  2500.00);
+
+-- Insert 8 conference_participant attendance records
+INSERT INTO conference_participant (conference_id, participant_id, fees_paid) VALUES
+('CONF2003A', 10001, 3000.00),
+('DSC2010',   10001, 3000.00),
+('IOTC2016',  10001, 3000.00),
+('CONF2008C', 10001, 3000.00),
+('DSC2010',   10002, 2500.00),
+('CONF2015B', 10002, 2500.00),
+('IOTC2016',  10003, 2000.00),
+('CONF2016D', 10004, 3000.00);
+
+TASK 4
+1. 
+SELECT 
+    o.name AS organiser_name,
+    c.conference_id,
+    COUNT(cp.participant_id) AS number_of_participants
+FROM organiser o
+JOIN conference c ON o.organiser_id = c.organiser_id
+LEFT JOIN conference_participant cp ON c.conference_id = cp.conference_id
+GROUP BY o.name, c.conference_id
+ORDER BY o.name ASC;
+
+2. 
+SELECT 
+    p.company,
+    SUM(cp.fees_paid) AS total_fees_paid
+FROM participant p
+JOIN conference_participant cp ON p.participant_id = cp.participant_id
+JOIN conference c ON cp.conference_id = c.conference_id
+WHERE c.conference_year IN (2008, 2010, 2016)
+GROUP BY p.company;
+
+3.
+SELECT 
+    v.venue_name,
+    COUNT(DISTINCT c.conference_id) AS no_of_conference,
+    COALESCE(SUM(cp.fees_paid), 0) AS total_fees_paid
+FROM venue v
+JOIN conference c ON v.venue_id = c.venue_id
+LEFT JOIN conference_participant cp ON c.conference_id = cp.conference_id
+GROUP BY v.venue_id, v.venue_name
+HAVING COUNT(DISTINCT c.conference_id) > 1;
+
+4. 
+SELECT 
+    c.conference_id,
+    c.name AS conference_name,
+    c.conference_year,
+    COUNT(ps.session_id) AS no_of_sessions
+FROM conference c
+LEFT JOIN parallel_session ps ON c.conference_id = ps.conference_id
+WHERE c.organiser_id = 100
+  AND c.conference_year IN (2003, 2015)
+GROUP BY c.conference_id, c.name, c.conference_year;
+
+
+5.
+SELECT 
+    conference_id,
+    c.name AS conference_name,
+    MAX(cp.fees_paid) AS max_fees_paid
+FROM conference c
+INNER JOIN conference_participant cp USING (conference_id)
+WHERE conference_id IN ('DSC2010', 'IOTC2016')
+GROUP BY conference_id, c.name;
+
+6. 
+SELECT 
+    p.participant_id,
+    p.name AS participant_name,
+    COUNT(cp.conference_id) AS no_of_frequent_attending
+FROM participant p
+JOIN conference_participant cp ON p.participant_id = cp.participant_id
+JOIN conference c ON cp.conference_id = c.conference_id
+JOIN venue v ON c.venue_id = v.venue_id
+WHERE v.city IN ('Kuala Lumpur', 'Langkawi', 'Penang')
+GROUP BY p.participant_id, p.name
+ORDER BY no_of_frequent_attending DESC;
+
